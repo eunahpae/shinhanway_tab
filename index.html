@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="ko">
+
+<head>
+	<meta charset="UTF-8">
+	<title>Ajax 탭메뉴 구현</title>
+	<link rel="stylesheet" href="css/tab.css">
+	<script src="https://code.jquery.com/jquery-3.7.0.min.js"></script>
+	<style>
+		body {
+			text-align: center;
+		}
+
+		h2,
+		p {
+			margin: 1rem;
+		}
+	</style>
+</head>
+
+<body>
+	<div class="tabcontainer">
+		<ul class='tabmenu'>
+			<li><a href="#tab1" data-url="tab1">신한WAY</a></li>
+			<li><a href="#tab2" data-url="tab2">미션</a></li>
+			<li><a href="#tab3" data-url="tab3">핵심가치</a></li>
+			<li><a href="#tab4" data-url="tab4">행동규범</a></li>
+		</ul>
+
+		<div id="tabcontent">
+
+		</div>
+
+		<script>
+			$(document).ready(function () {
+				$('.tabmenu>li>a').on('click', function () {
+					let tab = $(this).attr('data-url')
+					console.log(tab)
+					$('.tabmenu>li>a').removeClass('on')
+					$(this).addClass('on')
+
+					$.ajax({
+						type: 'GET',
+						url: `${tab}.html`, // 해당 html문서를 a요소가 가진 속성을 활용하여 가져오기
+						dataType: "html",
+						success: function (data) {
+							console.log(data);
+							$('#content').html(data)
+						},
+						error: function (error) {
+							console.error(error);
+						}
+					});
+					event.preventDefault()
+				})
+			})
+
+			$(document).ready(function () {
+
+				$.ajax({
+					type: 'GET',
+					url: 'tabcontent.json',
+					dataType: "json",
+					success: function (data) {
+						$.each(data, function (index, item) {
+							let h2 = `<h2>${item.title}</h2>`
+							let p = `<p>${item.content}</p>`
+							let img = `<img src=${item.url}>`
+
+							$('#tabcontent').append(h2, p, img)
+
+							// let title = item.title
+							// let url = item.url
+							// let content = item.content
+
+						})
+
+						$('#tabcontent *').hide()
+						$('.tabmenu>li>a').each(function (idx) {
+							$(this).on('click', function () {
+								console.log(idx)
+								$('#tabcontent *').hide()
+								$('#tabcontent h2').eq(idx).show()
+								$('#tabcontent p').eq(idx).show()
+								$('#tabcontent img').eq(idx).show()
+							})
+						})
+
+						// $('.tabmenu>li>a').on('click',function(){
+						// 	let idx=$(this).parent().index()
+						// 	console.log(idx)
+
+						// 	if (idx==index) {
+						// 		let html = `<h2>${title}</h2>
+						// 		<p>${content}</p><img src="${url}" alt="">`
+
+						// 		$('#tabcontent').html(html)									
+						// 	}
+						// 	$('h2').eq(index).text(title)
+						// 	$('p').eq(index).text(content)
+						// 	$('img').eq(index).attr('src',url)
+
+						// })
+
+					},
+					error: function (error) {
+						console.error(error);
+					}
+				});
+			})
+		</script>
+	</div>
+	<!-- .tabcontainer -->
+</body>
+
+</html>
